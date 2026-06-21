@@ -1,0 +1,237 @@
+Here's a concise draft of what this conversation has been about:
+
+---
+
+# AI Lab 1 Part B – Theory and Search Concepts
+
+## Main Theme
+
+The discussion focused on **informed search algorithms**, particularly **Greedy Best-First Search** and **A***, and the theory behind them before implementing the code.
+
+The key idea is that unlike BFS, DFS, and IDS, informed search uses a **heuristic** to estimate how close a state is to the goal and guide the search more intelligently.
+
+---
+
+## Core Concepts Covered
+
+### 1. Heuristics (h(n))
+
+A heuristic is an estimate of the remaining cost to reach the goal.
+
+For grid navigation, the lab uses **Manhattan Distance**:
+
+[
+h(n)=|x_{goal}-x_{current}|+|y_{goal}-y_{current}|
+]
+
+Intuition:
+
+* Calculate how many vertical moves are needed.
+* Calculate how many horizontal moves are needed.
+* Add them together.
+
+Example:
+
+```text
+Current: (2,3)
+Goal:    (8,7)
+
+|8-2| + |7-3|
+= 6 + 4
+= 10
+```
+
+Therefore:
+
+[
+h(n)=10
+]
+
+---
+
+### 2. Path Cost (g(n))
+
+The actual cost already spent reaching the current state.
+
+Example:
+
+```text
+Start -> A -> B -> Current
+```
+
+If the path costs were:
+
+```text
+2 + 4 + 3
+```
+
+then:
+
+[
+g(n)=9
+]
+
+---
+
+### 3. Evaluation Function (f(n))
+
+The value used to decide which node to expand next.
+
+Different algorithms define it differently:
+
+| Algorithm   | Evaluation Function |
+| ----------- | ------------------- |
+| UCS         | (f(n)=g(n))         |
+| Greedy      | (f(n)=h(n))         |
+| A*          | (f(n)=g(n)+h(n))    |
+| Weighted A* | (f(n)=g(n)+Wh(n))   |
+
+---
+
+## Why a Priority Queue Is Needed
+
+Informed search does not expand nodes based on insertion order.
+
+Instead, it expands the node with the smallest evaluation score.
+
+A priority queue is therefore used to always retrieve the most promising node first.
+
+Your explanation:
+
+> It is not about which node was inserted first or last, but which node is likely to give a lower cost.
+
+---
+
+## Why `reached` Becomes a Dictionary
+
+In BFS, a set was enough because the first time a state was reached was guaranteed to be optimal.
+
+In weighted search this is no longer true.
+
+The same state may be reached through:
+
+```text
+Cost 20
+```
+
+and later through:
+
+```text
+Cost 8
+```
+
+A dictionary allows the algorithm to remember the best version of a state and replace more expensive paths.
+
+Your explanation:
+
+> A set only tells us a state has been seen before, while a dictionary allows us to compare costs and keep the cheaper path.
+
+---
+
+## Why A* Uses a Late Goal Test
+
+A* does not stop when a goal node is generated.
+
+Instead, it waits until the goal node is removed from the priority queue.
+
+Reason:
+
+A cheaper path to the goal may still exist among the frontier nodes.
+
+This is closely related to why `reached` must store costs.
+
+---
+
+## Why Greedy Search Can Be Suboptimal
+
+Greedy uses only:
+
+[
+h(n)
+]
+
+and ignores:
+
+[
+g(n)
+]
+
+As a result, it may choose a path that appears closest to the goal but has accumulated very high costs.
+
+---
+
+## Why A* Is Optimal
+
+A* considers both:
+
+* cost already spent ((g(n)))
+* estimated remaining cost ((h(n)))
+
+When the heuristic is admissible, A* is guaranteed to find the lowest-cost solution.
+
+---
+
+## Drone Navigation Interpretation
+
+For the drone problem:
+
+### g(n)
+
+Cost already spent flying to the current position.
+
+### h(n)
+
+Estimated cost remaining to reach the destination.
+
+### f(n)
+
+Estimated total trip cost:
+
+[
+f(n)=g(n)+h(n)
+]
+
+---
+
+## Manhattan Distance Intuition
+
+You developed the following mental model:
+
+> Find the difference in one coordinate, find the difference in the other coordinate, and add them.
+
+Example:
+
+```text
+(5,4) -> (9,9)
+
+Vertical difference = 4
+Horizontal difference = 5
+
+Total = 9
+```
+
+Thus:
+
+[
+h(n)=9
+]
+
+This became the preferred way to think about Manhattan distance rather than memorizing the formula.
+
+---
+
+## Important Questions Identified for the Lab
+
+Before coding, you should be comfortable answering:
+
+1. Why informed search uses a priority queue.
+2. Why `reached` is a dictionary instead of a set.
+3. Why A* uses a late goal test.
+4. Why Greedy can return a worse path.
+5. Why A* remains optimal.
+6. What (g(n)), (h(n)), and (f(n)) represent in the drone scenario.
+7. Why Manhattan distance is admissible.
+
+---
+
+This conversation was primarily about building the intuition behind **heuristics, Greedy Search, A*, priority queues, path costs, admissibility, and optimality** so that the implementation in Lab 1 Part B feels natural rather than memorized.
